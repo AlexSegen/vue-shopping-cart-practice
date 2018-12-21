@@ -3,41 +3,53 @@
     <div class="row">
       <div class="col-sm-2"></div>
       <div class="col-sm-6">
-        <h5>🏬 Store</h5>
+        <h5>🏬 Fruits Store</h5>
         <hr />
-        <ul class="list-item">
-          <li v-for="(item, index) in items" :key="item.id">
+        <div class="stand">
+          <div class="item-stand" v-for="(item, index) in items" :key="item.id">
             <div class="card">
               <div class="card-body">
                 <span>{{ item.name }}</span> <br />
-                <span>$ {{ item.price }}</span>
+                <span class="badge badge-success small"
+                  >$ {{ item.price }}</span
+                >
               </div>
               <div class="card-footer">
                 <button
                   class="btn btn-sm"
                   @click="addItem(item, index);"
-                  :class="item.added ? 'btn-success' : ' btn-secondary'"
+                  :class="item.added ? 'btn-success' : ' btn-primary'"
                   :disabled="item.added"
-                  v-text="item.added ? '✅' : '➕'"
+                  v-text="item.added ? '✅' : 'BUY'"
                 ></button>
               </div>
             </div>
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
       <div class="col-sm-4">
         <div class="card my-5">
           <div class="card-header">
-            <small>❤️This is your shopping cart</small>
+            <small>🛒 This is your shopping cart </small>
           </div>
           <div class="card-body1">
-            <ul class="list-group cart-list">
+            <div class="thanks" v-show="checkoutStatus">
+              Thank you! ❤️<br />
+              <button
+                type="button"
+                class="btn btn-sm btn-primary"
+                @click="checkoutStatus = false;"
+              >
+                Buyt again
+              </button>
+            </div>
+            <ul v-show="!checkoutStatus" class="list-group cart-list">
               <li
                 class="list-group-item small text-center"
                 v-if="cart.items.length == 0"
               >
                 Your cart is empty 🤔<br />
-                <strong>Buy something nice!</strong>
+                <strong>Buy some nice food!</strong>
               </li>
               <li
                 class="list-group-item"
@@ -54,15 +66,15 @@
               </li>
             </ul>
           </div>
-          <div class="card-footer">
-            Total: <span class="badge badge-success">💲 {{ sumTotal }}</span>
-            <span
-              @click="buy"
-              class="badge badge-primary float-right"
-              role="button"
+          <div class="card-footer text-right small" v-show="!checkoutStatus">
+            <button
+              @click="Checkout"
+              type="button"
+              class="btn btn-sm btn-primary"
             >
-              🛒 Buy
-            </span>
+              💸 Checkout
+              <span class="badge badge-light">💲 {{ sumTotal }}</span>
+            </button>
           </div>
         </div>
       </div>
@@ -76,8 +88,8 @@ export default {
   name: "HelloWorld",
   data() {
     return {
+      checkoutStatus: "",
       items: items,
-      msg: "Welcome to Your Vue.js App",
       cart: {
         items: []
       },
@@ -100,6 +112,7 @@ export default {
   created() {},
   methods: {
     addItem(item) {
+      console.log(item);
       let found = this.items.find(i => i.id == item.id);
       found.added = true;
       this.cart.items.push(item);
@@ -109,15 +122,24 @@ export default {
       found.added = false;
       this.cart.items.splice(index, 1);
     },
-    buy() {
+    Checkout() {
       if (this.cart.items.length > 0) {
-        let now = new Date();
+        /*       let now = new Date();
         this.order = {
           name: "Alejandro",
           items: this.cart.items,
           total: this.sumTotal,
           date: now
-        };
+        }; */
+        //this.checkoutStatus = true;
+        this.cart.items = [];
+        console.table(this.items);
+        this.items = this.items.map(i => ({
+          name: i.name,
+          price: i.price,
+          added: false
+        }));
+        console.table(this.items);
       } else {
         alert("Your cart is empty 🙄");
       }
@@ -126,6 +148,10 @@ export default {
 };
 </script>
 <style scoped>
+.thanks {
+  text-align: center;
+  padding: 10px;
+}
 [role="button"] {
   cursor: pointer;
 }
@@ -138,5 +164,14 @@ export default {
 .list-item > li {
   display: inline-block;
   margin: 0 5px 10px;
+}
+.stand {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 20px;
+}
+
+.item-stand {
+  text-align: center;
 }
 </style>
