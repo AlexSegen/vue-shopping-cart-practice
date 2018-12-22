@@ -40,7 +40,7 @@
                 class="btn btn-sm btn-primary"
                 @click="checkoutStatus = false;"
               >
-                Buyt again
+                Buy again
               </button>
             </div>
             <ul v-show="!checkoutStatus" class="list-group cart-list">
@@ -56,7 +56,10 @@
                 v-for="(item, index) in cart.items"
                 :key="item.id"
               >
-                {{ item.name }} $ {{ item.price }}
+                {{ item.name }}
+                <span class="badge badge-success small"
+                  >$ {{ item.price }}</span
+                >
                 <span
                   class="badge badge-danger float-right"
                   role="button"
@@ -89,7 +92,7 @@ export default {
   data() {
     return {
       checkoutStatus: "",
-      items: items,
+      items: [],
       cart: {
         items: []
       },
@@ -109,10 +112,15 @@ export default {
       return total;
     }
   },
-  created() {},
+  created() {
+    this.listItems();
+  },
   methods: {
+    listItems() {
+      this.items = items;
+    },
     addItem(item) {
-      console.log(item);
+      this.checkoutStatus = false;
       let found = this.items.find(i => i.id == item.id);
       found.added = true;
       this.cart.items.push(item);
@@ -124,22 +132,22 @@ export default {
     },
     Checkout() {
       if (this.cart.items.length > 0) {
-        /*       let now = new Date();
+        let now = new Date();
         this.order = {
           name: "Alejandro",
           items: this.cart.items,
           total: this.sumTotal,
           date: now
-        }; */
-        //this.checkoutStatus = true;
+        };
+        this.checkoutStatus = true;
         this.cart.items = [];
-        console.table(this.items);
+        this.listItems();
         this.items = this.items.map(i => ({
+          id: i.id,
           name: i.name,
           price: i.price,
           added: false
         }));
-        console.table(this.items);
       } else {
         alert("Your cart is empty 🙄");
       }
