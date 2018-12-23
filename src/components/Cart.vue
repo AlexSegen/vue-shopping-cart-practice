@@ -33,27 +33,31 @@
             <small>🛒 This is your shopping cart </small>
           </div>
           <div class="card-body1">
-            <div class="thanks" v-show="checkoutStatus">
-              Thank you! ❤️<br />
+            <div class="thanks" v-show="checkoutDone">
+              <strong>Thank you!</strong>
+              <h3>😊</h3>
+              Enjoy your fruits!
+              <hr />
               <button
                 type="button"
                 class="btn btn-sm btn-primary"
-                @click="checkoutStatus = false;"
+                @click="checkoutStatus(false);"
               >
                 Buy again
               </button>
             </div>
-            <ul v-show="!checkoutStatus" class="list-group cart-list">
+            <ul v-show="!checkoutDone" class="list-group cart-list">
               <li
                 class="list-group-item small text-center"
-                v-if="cart.items.length == 0"
+                v-if="cartItems.length == 0"
               >
-                Your cart is empty 🤔<br />
+                Your cart is empty <br />
+                <h3>🤔</h3>
                 <strong>Buy some nice food!</strong>
               </li>
               <li
                 class="list-group-item"
-                v-for="(item, index) in cart.items"
+                v-for="(item, index) in cartItems"
                 :key="item.id"
               >
                 {{ item.name }}
@@ -63,20 +67,19 @@
                 <span
                   class="badge badge-danger float-right"
                   role="button"
-                  @click="removeItem(item, index);"
+                  @click="removeItem(item);"
                   >X</span
                 >
               </li>
             </ul>
           </div>
-          <div class="card-footer text-right small" v-show="!checkoutStatus">
+          <div class="card-footer text-right small" v-show="!checkoutDone">
             <button
               @click="Checkout"
               type="button"
               class="btn btn-sm btn-primary"
             >
-              💸 Checkout
-              <span class="badge badge-light">💲 {{ sumTotal }}</span>
+              💸 Checkout <span class="badge badge-light">💲 {{ total }}</span>
             </button>
           </div>
         </div>
@@ -86,71 +89,49 @@
 </template>
 
 <script>
-import items from "@/items";
+import { mapGetters, mapMutations } from "vuex";
 export default {
   name: "HelloWorld",
   data() {
     return {
-      checkoutStatus: "",
-      items: [],
-      cart: {
-        items: []
-      },
       order: {
         name: "",
-        items: [],
         total: null
       }
     };
   },
   computed: {
-    sumTotal() {
-      let total = 0;
-      for (let i of this.cart.items) {
-        total += i.price;
-      }
-      return total;
-    }
+    ...mapGetters({
+      items: "ITEMS",
+      cartItems: "CART_ITEMS",
+      total: "TOTAL",
+      checkoutDone: "CHECKOUT_DONE"
+    })
   },
-  created() {
-    this.listItems();
-  },
+  created() {},
   methods: {
-    listItems() {
-      this.items = items;
-    },
+    ...mapMutations([
+      "ADD_ITEM",
+      "REMOVE_ITEM",
+      "REMOVE_ALL",
+      "CHECKOUT",
+      "CHECKOUT_STATUS"
+    ]),
     addItem(item) {
-      this.checkoutStatus = false;
-      let found = this.items.find(i => i.id == item.id);
-      found.added = true;
-      this.cart.items.push(item);
+      this.ADD_ITEM(item);
     },
     removeItem(item, index) {
-      let found = this.items.find(i => i.id == item.id);
-      found.added = false;
-      this.cart.items.splice(index, 1);
+      this.REMOVE_ITEM(item);
     },
     Checkout() {
-      if (this.cart.items.length > 0) {
-        let now = new Date();
-        this.order = {
-          name: "Alejandro",
-          items: this.cart.items,
-          total: this.sumTotal,
-          date: now
-        };
-        this.checkoutStatus = true;
-        this.cart.items = [];
-        this.listItems();
-        this.items = this.items.map(i => ({
-          id: i.id,
-          name: i.name,
-          price: i.price,
-          added: false
-        }));
-      } else {
-        alert("Your cart is empty 🙄");
-      }
+      this.order = {
+        name: "Alejandro",
+        total: this.total
+      };
+      this.CHECKOUT(this.order);
+    },
+    checkoutStatus(param) {
+      this.CHECKOUT_STATUS(param);
     }
   }
 };
