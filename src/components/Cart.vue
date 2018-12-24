@@ -9,7 +9,7 @@
           <div class="item-stand" v-for="(item, index) in items" :key="item.id">
             <div class="card">
               <div class="card-body">
-                <span>{{ item.name }}</span> <br />
+                <span class="item-name">{{ item.name }}</span> <br />
                 <span class="badge badge-success small"
                   >$ {{ item.price }}</span
                 >
@@ -37,6 +37,18 @@
               <strong>Thank you!</strong>
               <h3>😊</h3>
               Enjoy your fruits!
+              <hr />
+              <div class="order-placed text-left">
+                <p class="text-center"><strong>Order finished</strong></p>
+                <p class="order-name">Name: {{ orderPlaced.name }}</p>
+                <ol>
+                  <li v-for="item in orderPlaced.items" :key="item.id">
+                    {{ item.name }}
+                    <span class="float-right"> $ {{ item.price }}</span>
+                  </li>
+                </ol>
+                <p class="order-total">Total: 💲 {{ orderPlaced.total }}</p>
+              </div>
               <hr />
               <button
                 type="button"
@@ -105,7 +117,8 @@ export default {
       items: "ITEMS",
       cartItems: "CART_ITEMS",
       total: "TOTAL",
-      checkoutDone: "CHECKOUT_DONE"
+      checkoutDone: "CHECKOUT_DONE",
+      orderPlaced: "ORDER"
     })
   },
   created() {},
@@ -137,6 +150,28 @@ export default {
 };
 </script>
 <style scoped>
+.order-placed {
+  background: #f8fcff;
+  padding: 10px;
+  font-size: 13px;
+  color: #737373;
+  border: 1px dashed #ddd;
+}
+.order-placed p {
+  margin-bottom: 4px;
+}
+.order-placed ol {
+  margin: 0;
+  padding: 15px;
+}
+.order-placed ol > li {
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+}
+.order-total {
+  font-weight: bold;
+  text-align: right;
+}
 .thanks {
   text-align: center;
   padding: 10px;
@@ -162,5 +197,26 @@ export default {
 
 .item-stand {
   text-align: center;
+}
+.cart-list > .list-group-item:last-child {
+  animation: dropIn 0.5s forwards 0s ease-in-out;
+}
+.item-stand .item-name {
+  font-size: 24px;
+}
+
+@keyframes dropIn {
+  0% {
+    transform: rotate(0) translateY(-10px);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(0) translateY(0);
+    opacity: 1;
+  }
+}
+
+.dropIn {
+  animation: dropIn 0.2s forwards 0s ease-in-out;
 }
 </style>
